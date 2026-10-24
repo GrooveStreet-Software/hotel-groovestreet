@@ -125,4 +125,4 @@ coverage.html
 .idea
 .vscode
 *.sublime-project
-*.sublime-workspace
+*.sublime-workspace.netlify/

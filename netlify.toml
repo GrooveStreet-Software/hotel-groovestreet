@@ -1,0 +1,15 @@
+# Static site: there is nothing to build, the HTML/Tailwind output is committed.
+# This file connects the repo to Netlify so a push to main deploys automatically.
+[build]
+  publish = "."
+  command = ""
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Single-page style fallback: the multi-page site links to .html files directly,
+# so no rewrites are needed, but keep unknown paths from 404ing to a blank page.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404
