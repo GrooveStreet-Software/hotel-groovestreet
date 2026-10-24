@@ -9,6 +9,8 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const INDEX = path.join(ROOT, "index.html");
+const SITE = "https://hotel-groovestreet.netlify.app";
+const SHARE_IMAGE = `${SITE}/img/bg-img/1.jpg`;
 
 const shell = fs.readFileSync(INDEX, "utf8");
 const MAIN_START = shell.indexOf('<main id="main">');
@@ -56,6 +58,54 @@ for (const page of pages) {
       `$1 is-active>`
     );
   }
+
+  // Structured data describes the hotel itself and belongs to the homepage
+  // only; the shell would otherwise stamp it onto all six generated pages.
+  html = html.replace(
+    /\s*<!-- Structured data: Hotel \/ LodgingBusiness -->[\s\S]*?<\/script>/,
+    ""
+  );
+
+  // Per-page social share metadata. The shell carries the homepage's values,
+  // so every generated page must be re-pointed at its own title, description
+  // and URL or all six pages would share one Open Graph object.
+  const pageUrl = `${SITE}/${page.slug}`;
+  html = html.replace(
+    /<meta property="og:title" content="[\s\S]*?">/,
+    `<meta property="og:title" content="${page.title}">`
+  );
+  html = html.replace(
+    /<meta property="og:description" content="[\s\S]*?">/,
+    `<meta property="og:description" content="${page.description}">`
+  );
+  html = html.replace(
+    /<meta property="og:url" content="[\s\S]*?">/,
+    `<meta property="og:url" content="${pageUrl}">`
+  );
+  html = html.replace(
+    /<meta property="og:image" content="[\s\S]*?">/,
+    `<meta property="og:image" content="${SHARE_IMAGE}">`
+  );
+  html = html.replace(
+    /<meta name="twitter:title" content="[\s\S]*?">/,
+    `<meta name="twitter:title" content="${page.title}">`
+  );
+  html = html.replace(
+    /<meta name="twitter:description" content="[\s\S]*?">/,
+    `<meta name="twitter:description" content="${page.description}">`
+  );
+  html = html.replace(
+    /<meta name="twitter:image" content="[\s\S]*?">/,
+    `<meta name="twitter:image" content="${SHARE_IMAGE}">`
+  );
+  html = html.replace(
+    /<link rel="canonical" href="[\s\S]*?">/,
+    `<link rel="canonical" href="${pageUrl}">`
+  );
+
+  // The booking form lives on index.html only, so generated pages must link to it
+  // rather than to a "#booking" anchor that does not exist on their own page.
+  html = html.replace(/href="#booking"/g, 'href="index.html#booking"');
 
   fs.writeFileSync(path.join(ROOT, page.slug), html, "utf8");
   console.log("wrote", page.slug);
