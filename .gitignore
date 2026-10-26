@@ -126,3 +126,6 @@ coverage.html
 .vscode
 *.sublime-project
 *.sublime-workspace.netlify/
+
+# Local Netlify folder
+.netlify
